@@ -1,0 +1,2 @@
+# Also ignore package-lock.json in server/ and client/
+package-lock.json

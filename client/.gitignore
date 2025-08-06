@@ -1,0 +1,11 @@
+# env files
+.env
+.env.local
+
+# package-lock.json
+package-lock.json
+
+# node_modules
+node_modules
+
+
