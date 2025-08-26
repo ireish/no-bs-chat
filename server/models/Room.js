@@ -4,9 +4,21 @@ const roomSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        trim: true, // Removes whitespace
-        unique: true // No two rooms can have the same name
-    }
+        unique: true
+    },
+    number: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    passwordHash: {
+        type: String,
+        default: null
+    },
+    users: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }]
 });
 
 const Room = mongoose.model('Room', roomSchema);

@@ -1,22 +1,29 @@
 import { useEffect, useState } from 'react';
+import { socket } from '../socket';
+
+type User = {
+  _id: string;
+  displayName: string;
+  image: string;
+};
 
 type Room = {
   _id: string;
   name: string;
+  number: string;
+  users: User[];
 };
 
 type ChatRoomsProps = {
-  refreshSignal?: number;
-  onSelectRoom?: (room: Room) => void;
+  onRequestJoin?: (roomNumber?: string) => void;
 };
 
-export const ChatRooms = ({ refreshSignal = 0, onSelectRoom }: ChatRoomsProps) => {
+export const ChatRooms = ({ onRequestJoin }: ChatRoomsProps) => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    let isCancelled = false;
     async function fetchRooms() {
       setIsLoading(true);
       setError(null);
@@ -29,18 +36,23 @@ export const ChatRooms = ({ refreshSignal = 0, onSelectRoom }: ChatRoomsProps) =
           throw new Error(data.message || 'Failed to fetch rooms');
         }
         const data: Room[] = await res.json();
-        if (!isCancelled) setRooms(data);
+        setRooms(data);
       } catch (err) {
-        if (!isCancelled) setError((err as Error).message);
+        setError((err as Error).message);
       } finally {
-        if (!isCancelled) setIsLoading(false);
+        setIsLoading(false);
       }
     }
     fetchRooms();
+    
+    socket.on('updateRooms', (updatedRooms: Room[]) => {
+      setRooms(updatedRooms);
+    });
+
     return () => {
-      isCancelled = true;
+      socket.off('updateRooms');
     };
-  }, [refreshSignal]);
+  }, []);
 
   if (isLoading) {
     return (
@@ -65,6 +77,11 @@ export const ChatRooms = ({ refreshSignal = 0, onSelectRoom }: ChatRoomsProps) =
       <div className="text-gray-300">No rooms yet. Create one to get started.</div>
     );
   }
+  
+  const handleJoinClick = (room: Room) => {
+    onRequestJoin && onRequestJoin(room.number);
+  };
+
 
   return (
     <div>
@@ -73,11 +90,25 @@ export const ChatRooms = ({ refreshSignal = 0, onSelectRoom }: ChatRoomsProps) =
         {rooms.map((room) => (
           <button
             key={room._id}
-            className="text-left w-full h-24 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-indigo-500 transition-colors p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            onClick={() => onSelectRoom?.(room)}
+            className="text-left w-full h-auto rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-indigo-500 transition-colors p-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            onClick={() => handleJoinClick(room)}
           >
             <div className="text-lg font-medium text-white truncate">{room.name}</div>
-            <div className="text-sm text-gray-400 mt-1">Click to join</div>
+            <div className="text-xs text-gray-500 mt-1">Room #{room.number}</div>
+            <div className="text-sm text-gray-400 mt-2">
+              {room.users.length > 0 ? `${room.users.length} user(s) online` : 'No users online'}
+            </div>
+            <div className="flex -space-x-2 overflow-hidden mt-2">
+              {room.users.map((u) => (
+                <img
+                  key={u._id}
+                  className="inline-block h-8 w-8 rounded-full ring-2 ring-gray-800"
+                  src={u.image}
+                  alt={u.displayName}
+                  title={u.displayName}
+                />
+              ))}
+            </div>
           </button>
         ))}
       </div>
