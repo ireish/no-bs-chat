@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { socket } from '../socket';
+import { ChatRooms } from './ChatRooms';
 
 export const ChatPage = () => {
-  const [isConnected, setIsConnected] = useState(socket.connected);
+  const [isConnected, setIsConnected] = useState<boolean>(socket.connected);
   const [roomName, setRoomName] = useState('');
+  const [roomsRefresh, setRoomsRefresh] = useState(0);
 
   const handleCreateRoom = async () => {
     if (!roomName) return; // Don't create empty rooms
@@ -15,6 +17,7 @@ export const ChatPage = () => {
           'Content-Type': 'application/json',
           // We'll need to handle credentials later for our authCheck
         },
+        credentials: 'include',
         body: JSON.stringify({ name: roomName }),
       });
 
@@ -22,6 +25,7 @@ export const ChatPage = () => {
       if (response.ok) {
         alert(`Room "${newRoom.name}" created successfully!`);
         setRoomName(''); // Clear the input field
+        setRoomsRefresh((v) => v + 1); // Refresh rooms list
       } else {
         throw new Error(newRoom.message || 'Failed to create room');
       }
@@ -56,7 +60,8 @@ export const ChatPage = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white px-4">
-      <h2 className="text-4xl font-bold mb-8">Chat Application</h2>
+      <h2 className="text-4xl font-bold mb-2">Chat Application</h2>
+      <div className="text-sm mb-8 text-gray-400">Status: {isConnected ? 'Connected' : 'Disconnected'}</div>
 
       <div className="create-room flex flex-col items-center space-y-4">
         <h3 className="text-2xl font-semibold">Create a New Room</h3>
@@ -73,6 +78,10 @@ export const ChatPage = () => {
         >
           Create Room
         </button>
+      </div>
+
+      <div className="w-full max-w-5xl mt-12">
+        <ChatRooms refreshSignal={roomsRefresh} />
       </div>
     </div>
   );

@@ -111,6 +111,16 @@ app.post('/api/rooms', authCheck, async (req, res) => {
     }
 });
 
+// List all rooms (requires auth)
+app.get('/api/rooms', authCheck, async (req, res) => {
+    try {
+        const rooms = await Room.find().sort({ name: 1 });
+        res.json(rooms);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching rooms', error });
+    }
+});
+
 // 5. Listen for a connection event
 io.on('connection', (socket) => {
   console.log('A user connected with id:', socket.id);
