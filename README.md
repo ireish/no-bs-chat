@@ -1,6 +1,6 @@
 ## No‑BS Chat
 
-A minimal, production‑ready chat application with Google OAuth, multiple rooms, optional room passwords, and real‑time messaging via Socket.IO. The project is split into a React (Vite) client and a Node.js/Express server using MongoDB.
+A minimal chat application with Google OAuth, multiple rooms, optional room passwords, and real‑time messaging via Socket.IO. The project is split into a React (Vite) client and a Node.js/Express server using MongoDB.
 
 
 
