@@ -3,6 +3,11 @@
 A minimal, production‑ready chat application with Google OAuth, multiple rooms, optional room passwords, and real‑time messaging via Socket.IO. The project is split into a React (Vite) client and a Node.js/Express server using MongoDB.
 
 
+
+https://github.com/user-attachments/assets/8a968ef2-a3a8-41d1-9c08-76eb0f7476db
+
+
+
 Short architecture note & future improvements
 - Architecture: The client is a Vite/React app using Socket.IO for realtime and a small REST layer for auth/profile, room CRUD, and message history. The server is modularized into config, routes, middleware, auth (Passport), sockets, and models. Sessions back Passport, and Socket.IO reuses the same session for authenticated sockets. MongoDB (Mongoose) stores users, rooms (with number/passwordHash), and messages.
 - With more time: I’d add E2E tests (Playwright/Cypress) and API tests (Jest/Supertest), production TLS and cookie hardening, rate‑limiting and input validation (zod/celebrate), structured logging (pino/winston) with request IDs, horizontal scalability for Socket.IO (Redis adapter) and Mongo (indexes, TTL if needed), CI/CD with lint/tests, better error boundaries on the client, and a permissions model (owners/mods per room).
