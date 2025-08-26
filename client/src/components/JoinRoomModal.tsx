@@ -1,18 +1,6 @@
 import { useState } from 'react';
 import { socket } from '../socket';
-
-type User = {
-  _id: string;
-  displayName: string;
-  image: string;
-};
-
-type Room = {
-  _id: string;
-  name: string;
-  number: string;
-  users: User[];
-};
+import type { Room } from '../types/chat';
 
 type JoinRoomModalProps = {
   defaultRoomNumber?: string;

@@ -1,8 +1,6 @@
 import { io } from 'socket.io-client';
+import { config } from './utils/config';
 
-// The URL of our backend server
-const URL = 'http://localhost:5000';
-
-export const socket = io(URL, {
+export const socket = io(config.SOCKET_URL, {
   withCredentials: true,
 });

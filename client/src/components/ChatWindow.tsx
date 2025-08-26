@@ -1,30 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { socket } from '../socket';
 import { format } from 'date-fns';
+import { config } from '../utils/config';
+import type { Message, Room, User } from '../types/chat';
 
-type Message = {
-    _id: string;
-    text: string;
-    user: {
-        _id: string;
-        displayName: string;
-        image: string;
-    };
-    room: string; // Add room property
-    createdAt: string;
-};
-
-type User = {
-    _id: string;
-    displayName: string;
-    image: string;
-};
-
-type Room = {
-    _id: string;
-    name: string;
-    users: User[];
-};
+// Types moved to shared definitions
 
 
 type ChatWindowProps = {
@@ -50,7 +30,7 @@ export const ChatWindow = ({ room, user, onLeaveRoom }: ChatWindowProps) => {
         // Fetch initial messages
         const fetchMessages = async () => {
             try {
-                const res = await fetch(`http://localhost:5000/api/rooms/${room._id}/messages`, {
+                const res = await fetch(`${config.API_BASE_URL}/api/rooms/${room._id}/messages`, {
                     credentials: 'include',
                 });
                 if (res.ok) {

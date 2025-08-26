@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { LoginPage } from './components/LoginPage';
 import { ChatPage } from './components/ChatPage';
+import { config } from './utils/config';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -8,7 +9,7 @@ function App() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/profile', {
+        const response = await fetch(`${config.API_BASE_URL}/api/profile`, {
           credentials: 'include', // Important: tells the browser to send cookies
         });
 

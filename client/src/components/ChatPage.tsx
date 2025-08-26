@@ -1,21 +1,11 @@
 import { useEffect, useState } from 'react';
 import { socket } from '../socket';
+import { config } from '../utils/config';
 import { ChatRooms } from './ChatRooms';
 import { ChatWindow } from './ChatWindow'; // Import ChatWindow
 import { JoinRoomModal } from './JoinRoomModal';
 
-type User = {
-  _id: string;
-  displayName: string;
-  image: string;
-};
-
-type Room = {
-  _id: string;
-  name: string;
-  number?: string;
-  users: User[];
-};
+import type { User, Room } from '../types/chat';
 
 type ChatPageProps = {
   user: User;
@@ -32,7 +22,7 @@ export const ChatPage = ({ user }: ChatPageProps) => {
     if (!roomName) return; // Don't create empty rooms
 
     try {
-      const response = await fetch('http://localhost:5000/api/rooms', {
+      const response = await fetch(`${config.API_BASE_URL}/api/rooms`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -1,25 +1,16 @@
 import { useEffect, useState } from 'react';
 import { socket } from '../socket';
+import { config } from '../utils/config';
+import type { Room } from '../types/chat';
 
-type User = {
-  _id: string;
-  displayName: string;
-  image: string;
-};
-
-type Room = {
-  _id: string;
-  name: string;
-  number: string;
-  users: User[];
-};
+type RoomWithNumber = Room & { number: string };
 
 type ChatRoomsProps = {
   onRequestJoin?: (roomNumber?: string) => void;
 };
 
 export const ChatRooms = ({ onRequestJoin }: ChatRoomsProps) => {
-  const [rooms, setRooms] = useState<Room[]>([]);
+  const [rooms, setRooms] = useState<RoomWithNumber[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,14 +19,14 @@ export const ChatRooms = ({ onRequestJoin }: ChatRoomsProps) => {
       setIsLoading(true);
       setError(null);
       try {
-        const res = await fetch('http://localhost:5000/api/rooms', {
+        const res = await fetch(`${config.API_BASE_URL}/api/rooms`, {
           credentials: 'include',
         });
         if (!res.ok) {
           const data = await res.json().catch(() => ({}));
           throw new Error(data.message || 'Failed to fetch rooms');
         }
-        const data: Room[] = await res.json();
+        const data: RoomWithNumber[] = await res.json();
         setRooms(data);
       } catch (err) {
         setError((err as Error).message);
@@ -45,7 +36,7 @@ export const ChatRooms = ({ onRequestJoin }: ChatRoomsProps) => {
     }
     fetchRooms();
     
-    socket.on('updateRooms', (updatedRooms: Room[]) => {
+    socket.on('updateRooms', (updatedRooms: RoomWithNumber[]) => {
       setRooms(updatedRooms);
     });
 
@@ -78,7 +69,7 @@ export const ChatRooms = ({ onRequestJoin }: ChatRoomsProps) => {
     );
   }
   
-  const handleJoinClick = (room: Room) => {
+  const handleJoinClick = (room: RoomWithNumber) => {
     onRequestJoin && onRequestJoin(room.number);
   };
 
