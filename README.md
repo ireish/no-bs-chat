@@ -2,14 +2,11 @@
 
 A minimal, production‑ready chat application with Google OAuth, multiple rooms, optional room passwords, and real‑time messaging via Socket.IO. The project is split into a React (Vite) client and a Node.js/Express server using MongoDB.
 
-### Features
-- Google OAuth 2.0 authentication (Passport)
-- Auth‑gated access to rooms and messages
-- Create rooms with random 6‑digit room numbers
-- Optional room password (securely hashed)
-- Join rooms by number/password using server acks
-- Real‑time messaging with Socket.IO
-- Per‑room user presence and message history (MongoDB)
+
+Short architecture note & future improvements
+- Architecture: The client is a Vite/React app using Socket.IO for realtime and a small REST layer for auth/profile, room CRUD, and message history. The server is modularized into config, routes, middleware, auth (Passport), sockets, and models. Sessions back Passport, and Socket.IO reuses the same session for authenticated sockets. MongoDB (Mongoose) stores users, rooms (with number/passwordHash), and messages.
+- With more time: I’d add E2E tests (Playwright/Cypress) and API tests (Jest/Supertest), production TLS and cookie hardening, rate‑limiting and input validation (zod/celebrate), structured logging (pino/winston) with request IDs, horizontal scalability for Socket.IO (Redis adapter) and Mongo (indexes, TTL if needed), CI/CD with lint/tests, better error boundaries on the client, and a permissions model (owners/mods per room).
+
 
 ### Tech Stack
 - Client: React + TypeScript, Vite, TailwindCSS
@@ -164,14 +161,6 @@ GOOGLE_CLIENT_ID=your_client_id
 GOOGLE_CLIENT_SECRET=your_client_secret
 GOOGLE_CALLBACK_URL=http://localhost:5000/auth/google/callback
 ```
-
----
-
-## Usage
-1. Click “Sign in with Google” to authenticate.
-2. Create a room (optionally set a password). A 6‑digit room number is generated automatically.
-3. Join a room using “Join a Room” and enter the number (+ password if set). Join is verified server‑side.
-4. Send messages; they are persisted per room and broadcast in real‑time.
 
 ---
 
